@@ -1,148 +1,48 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+const WORKER_URL = "https://shrill-bush-9db8.angeliquezometa.workers.dev";
+
+const chatWindow = document.getElementById("chatWindow");
+const chatForm = document.getElementById("chatForm");
+const userInput = document.getElementById("userInput");
+
+function addMessage(text, sender) {
+  const msg = document.createElement("div");
+  msg.className = sender === "user" ? "user-message" : "ai-message";
+  msg.textContent = text;
+  chatWindow.appendChild(msg);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: linear-gradient(135deg, #fdf7fb, #efe5ff);
-  color: #222;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 30px 15px;
-}
+async function callOpenAI(message) {
+  const response = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message })
+  });
 
-.page-wrapper {
-  width: 100%;
-  max-width: 760px;
-}
-
-.site-header {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.brand {
-  font-size: 14px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  color: #7b2ff7;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-}
-
-.site-title {
-  font-size: 32px;
-  margin-bottom: 8px;
-}
-
-.subtitle {
-  color: #666;
-  font-size: 16px;
-}
-
-.chatbox {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-  padding: 18px;
-}
-
-.chat-window {
-  height: 420px;
-  overflow-y: auto;
-  border: 1px solid #e4dff0;
-  border-radius: 14px;
-  padding: 16px;
-  background: #faf8ff;
-  margin-bottom: 14px;
-}
-
-.user-message,
-.ai-message {
-  max-width: 80%;
-  padding: 12px 14px;
-  border-radius: 14px;
-  margin-bottom: 12px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-.user-message {
-  background: #7b2ff7;
-  color: white;
-  margin-left: auto;
-  border-bottom-right-radius: 4px;
-}
-
-.ai-message {
-  background: #ece8f8;
-  color: #222;
-  margin-right: auto;
-  border-bottom-left-radius: 4px;
-}
-
-.chat-form {
-  display: flex;
-  gap: 10px;
-}
-
-.chat-form input {
-  flex: 1;
-  padding: 13px 14px;
-  border: 1px solid #d7d0e8;
-  border-radius: 10px;
-  font-size: 15px;
-  outline: none;
-}
-
-.chat-form input:focus {
-  border-color: #7b2ff7;
-}
-
-.chat-form button {
-  border: none;
-  background: #7b2ff7;
-  color: white;
-  padding: 0 18px;
-  border-radius: 10px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.chat-form button:hover {
-  background: #6820d7;
-}
-
-.site-footer {
-  text-align: center;
-  margin-top: 18px;
-  color: #666;
-  font-size: 13px;
-}
-
-@media (max-width: 640px) {
-  .site-title {
-    font-size: 26px;
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Request failed.");
   }
 
-  .chat-window {
-    height: 360px;
-  }
-
-  .user-message,
-  .ai-message {
-    max-width: 92%;
-  }
-
-  .chat-form {
-    flex-direction: column;
-  }
-
-  .chat-form button {
-    padding: 12px;
-  }
+  const data = await response.json();
+  return data?.choices?.[0]?.message?.content || "No response returned.";
 }
+
+chatForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const message = userInput.value.trim();
+  if (!message) return;
+
+  addMessage(message, "user");
+  userInput.value = "";
+
+  try {
+    const reply = await callOpenAI(message);
+    addMessage(reply, "ai");
+  } catch (error) {
+    addMessage("Error: " + error.message, "ai");
+  }
+});
