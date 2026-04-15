@@ -1,11 +1,9 @@
 const WORKER_URL = "https://shrill-bush-9db8.angeliquezometa.workers.dev";
 
-// Elements
 const chatWindow = document.getElementById("chatWindow");
 const chatForm = document.getElementById("chatForm");
 const userInput = document.getElementById("userInput");
 
-// Add message to UI
 function addMessage(text, sender) {
   const msg = document.createElement("div");
   msg.className = sender === "user" ? "user-message" : "ai-message";
@@ -14,7 +12,6 @@ function addMessage(text, sender) {
   chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Call Cloudflare Worker
 async function callOpenAI(message) {
   const response = await fetch(WORKER_URL, {
     method: "POST",
@@ -26,16 +23,15 @@ async function callOpenAI(message) {
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || "Failed request");
+    throw new Error(errorText || "Request failed.");
   }
 
   const data = await response.json();
-  return data.choices?.[0]?.message?.content || "No response.";
+  return data?.choices?.[0]?.message?.content || "No response returned.";
 }
 
-// Handle form submit
-chatForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+chatForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
   const message = userInput.value.trim();
   if (!message) return;
