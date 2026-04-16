@@ -1,48 +1,173 @@
-const WORKER_URL = "https://shrill-bush-9db8.angeliquezometa.workers.dev";
-
-const chatWindow = document.getElementById("chatWindow");
-const chatForm = document.getElementById("chatForm");
-const userInput = document.getElementById("userInput");
-
-function addMessage(text, sender) {
-  const msg = document.createElement("div");
-  msg.className = sender === "user" ? "user-message" : "ai-message";
-  msg.textContent = text;
-  chatWindow.appendChild(msg);
-  chatWindow.scrollTop = chatWindow.scrollHeight;
+/* —— basic reset —— */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-async function callOpenAI(message) {
-  const response = await fetch(WORKER_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ message })
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Request failed.");
-  }
-
-  const data = await response.json();
-  return data?.choices?.[0]?.message?.content || "No response returned.";
+/* —— body + fonts —— */
+body {
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8f3ff, #fdf8fb);
+  min-height: 100vh;
+  padding: 20px 0;
 }
 
-chatForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
+.page-wrapper {
+  width: 90%;
+  max-width: 900px;
+}
 
-  const message = userInput.value.trim();
-  if (!message) return;
+/* header */
+.site-header {
+  text-align: center;
+  padding-top: 50px;
+}
 
-  addMessage(message, "user");
-  userInput.value = "";
+.site-title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
 
-  try {
-    const reply = await callOpenAI(message);
-    addMessage(reply, "ai");
-  } catch (error) {
-    addMessage("Error: " + error.message, "ai");
-  }
-});
+.site-subtitle {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+/* chat window */
+.chatbox {
+  margin: 40px 0;
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.chat-window {
+  height: 360px;
+  border: 1px solid #d9d9d9;
+  border-radius: 14px;
+  padding: 20px;
+  font-size: 18px;
+  line-height: 1.5;
+  overflow-y: auto;
+  background: #fafafa;
+  white-space: pre-line;
+}
+
+/* messages */
+.msg {
+  margin-bottom: 14px;
+  line-height: 1.5;
+  max-width: 85%;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+.msg.user {
+  color: #fff;
+  background: #000;
+  margin-left: auto;
+  text-align: right;
+}
+
+.msg.ai {
+  color: #333;
+  background: #ececec;
+}
+
+.msg.system {
+  color: #4b3f72;
+  background: #efe8ff;
+  max-width: 100%;
+}
+
+/* input row */
+.chat-form {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.chat-form input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ccc;
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+.chat-form input:focus {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.chat-form button {
+  font-size: 18px;
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s;
+  border-radius: 10px;
+}
+
+.chat-form button .material-icons {
+  font-size: 24px;
+}
+
+.chat-form button:hover {
+  background: #666666;
+}
+
+.chat-form button:focus {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+/* visually hidden */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* footer */
+.site-footer {
+  margin: 60px 0 40px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.site-footer nav {
+  margin-top: 12px;
+}
+
+.site-footer a {
+  margin: 0 8px;
+  color: #000;
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: #666666;
+}
