@@ -1,45 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>L'Oréal AI Chatbox</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <div class="page-wrapper">
-    <header class="site-header">
-      <p class="brand">L'Oréal Paris</p>
-      <h1 class="site-title">L'Oréal AI Beauty Assistant</h1>
-      <p class="subtitle">Get personalized skincare and beauty advice powered by AI.</p>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>L'Oréal AI Beauty Assistant</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-    <main>
-      <section class="chatbox">
-        <div id="chatWindow" class="chat-window">
-          <div class="ai-message">
-            Hi! Ask me about skincare routines, dry skin, oily skin, acne-friendly products, or beauty tips.
-          </div>
-        </div>
+  <body>
+    <div class="page-wrapper">
+      <header class="site-header">
+        <h1 class="site-title">L'Oréal AI Beauty Assistant</h1>
+        <p class="site-subtitle">
+          Ask me about skincare products, routines, dry skin, oily skin, and beauty tips.
+        </p>
+      </header>
 
-        <form id="chatForm" class="chat-form">
-          <input
-            id="userInput"
-            type="text"
-            placeholder="Ask about skincare, makeup, routines..."
-            autocomplete="off"
-            required
-          />
-          <button type="submit">Send</button>
-        </form>
-      </section>
-    </main>
+      <main>
+        <section class="chatbox">
+          <div id="chatWindow" class="chat-window"></div>
 
-    <footer class="site-footer">
-      <p>© 2026 L'Oréal AI Experience</p>
-    </footer>
-  </div>
+          <form id="chatForm" class="chat-form">
+            <label for="userInput" class="visually-hidden">Message</label>
+            <input
+              id="userInput"
+              name="userInput"
+              type="text"
+              placeholder="Ask me about products or routines…"
+              autocomplete="off"
+              required
+            />
+            <button type="submit" id="sendBtn">
+              <span class="material-icons">send</span>
+              <span class="visually-hidden">Send</span>
+            </button>
+          </form>
+        </section>
+      </main>
 
-  <script src="script.js"></script>
-</body>
+      <footer class="site-footer">
+        <p>&copy; 2026 L'Oréal AI Student Project. All rights reserved.</p>
+        <nav>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Use</a>
+          <a href="#">Contact</a>
+        </nav>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
 </html>
