@@ -1,18 +1,27 @@
 const WORKER_URL = "https://shrill-bush-9db8.angeliquezometa.workers.dev";
 
-const chatWindow = document.getElementById("chatWindow");
+/* DOM elements */
 const chatForm = document.getElementById("chatForm");
 const userInput = document.getElementById("userInput");
+const chatWindow = document.getElementById("chatWindow");
 
+/* Add message to chat */
 function addMessage(text, sender) {
-  const msg = document.createElement("div");
-  msg.className = sender === "user" ? "user-message" : "ai-message";
-  msg.textContent = text;
-  chatWindow.appendChild(msg);
+  const messageEl = document.createElement("div");
+  messageEl.classList.add("msg", sender);
+  messageEl.textContent = text;
+  chatWindow.appendChild(messageEl);
   chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-async function callOpenAI(message) {
+/* Initial message */
+addMessage(
+  "👋 Hello! I’m your L'Oréal beauty assistant. Ask me about skincare routines, dry skin, oily skin, acne-friendly products, or beauty tips.",
+  "system"
+);
+
+/* Call Cloudflare Worker */
+async function getAIResponse(message) {
   const response = await fetch(WORKER_URL, {
     method: "POST",
     headers: {
@@ -21,17 +30,18 @@ async function callOpenAI(message) {
     body: JSON.stringify({ message })
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Request failed.");
+    throw new Error(data.error || "Failed to get response.");
   }
 
-  const data = await response.json();
   return data?.choices?.[0]?.message?.content || "No response returned.";
 }
 
-chatForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
+/* Handle form submit */
+chatForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
   const message = userInput.value.trim();
   if (!message) return;
@@ -40,9 +50,9 @@ chatForm.addEventListener("submit", async (event) => {
   userInput.value = "";
 
   try {
-    const reply = await callOpenAI(message);
-    addMessage(reply, "ai");
+    const aiReply = await getAIResponse(message);
+    addMessage(aiReply, "ai");
   } catch (error) {
-    addMessage("Error: " + error.message, "ai");
+    addMessage(`Error: ${error.message}`, "system");
   }
 });
